@@ -1,65 +1,71 @@
-"""Initialize `docx` package.
-
-Export the `Document` constructor function and establish the mapping of part-type to
-the part-classe that implements that type.
-"""
-
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Type
-
-from docx.api import Document
-
-if TYPE_CHECKING:
-    from docx.opc.part import Part
-
-__version__ = "1.2.0"
-
-
-__all__ = ["Document"]
-
-
-# -- register custom Part classes with opc package reader --
-
-from docx.opc.constants import CONTENT_TYPE as CT
-from docx.opc.constants import RELATIONSHIP_TYPE as RT
-from docx.opc.part import PartFactory
-from docx.opc.parts.coreprops import CorePropertiesPart
-from docx.parts.comments import CommentsPart
-from docx.parts.document import DocumentPart
-from docx.parts.hdrftr import FooterPart, HeaderPart
-from docx.parts.image import ImagePart
-from docx.parts.numbering import NumberingPart
-from docx.parts.settings import SettingsPart
-from docx.parts.styles import StylesPart
-
-
-def part_class_selector(content_type: str, reltype: str) -> Type[Part] | None:
-    if reltype == RT.IMAGE:
-        return ImagePart
-    return None
-
-
-PartFactory.part_class_selector = part_class_selector
-PartFactory.part_type_for[CT.OPC_CORE_PROPERTIES] = CorePropertiesPart
-PartFactory.part_type_for[CT.WML_COMMENTS] = CommentsPart
-PartFactory.part_type_for[CT.WML_DOCUMENT_MAIN] = DocumentPart
-PartFactory.part_type_for[CT.WML_FOOTER] = FooterPart
-PartFactory.part_type_for[CT.WML_HEADER] = HeaderPart
-PartFactory.part_type_for[CT.WML_NUMBERING] = NumberingPart
-PartFactory.part_type_for[CT.WML_SETTINGS] = SettingsPart
-PartFactory.part_type_for[CT.WML_STYLES] = StylesPart
-
-del (
-    CT,
-    CorePropertiesPart,
-    CommentsPart,
-    DocumentPart,
-    FooterPart,
-    HeaderPart,
-    NumberingPart,
-    PartFactory,
-    SettingsPart,
-    StylesPart,
-    part_class_selector,
+from . import caching
+from ._version import __version__  # noqa: F401
+from .callbacks import Callback
+from .compression import available_compressions
+from .core import get_fs_token_paths, open, open_files, open_local, url_to_fs
+from .exceptions import FSTimeoutError
+from .mapping import FSMap, get_mapper
+from .registry import (
+    available_protocols,
+    filesystem,
+    get_filesystem_class,
+    register_implementation,
+    registry,
 )
+from .spec import AbstractFileSystem
+
+__all__ = [
+    "AbstractFileSystem",
+    "FSTimeoutError",
+    "FSMap",
+    "filesystem",
+    "register_implementation",
+    "get_filesystem_class",
+    "get_fs_token_paths",
+    "get_mapper",
+    "open",
+    "open_files",
+    "open_local",
+    "registry",
+    "caching",
+    "Callback",
+    "available_protocols",
+    "available_compressions",
+    "url_to_fs",
+]
+
+
+def process_entries():
+    try:
+        from importlib.metadata import entry_points
+    except ImportError:
+        return
+    if entry_points is not None:
+        try:
+            eps = entry_points()
+        except TypeError:
+            pass  # importlib-metadata < 0.8
+        else:
+            if hasattr(eps, "select"):  # Python 3.10+ / importlib_metadata >= 3.9.0
+                specs = eps.select(group="fsspec.specs")
+            else:
+                specs = eps.get("fsspec.specs", [])
+            registered_names = {}
+            for spec in specs:
+                err_msg = f"Unable to load filesystem from {spec}"
+                name = spec.name
+                if name in registered_names:
+                    continue
+                registered_names[name] = True
+                register_implementation(
+                    name,
+                    spec.value.replace(":", "."),
+                    errtxt=err_msg,
+                    # We take our implementations as the ones to overload with if
+                    # for some reason we encounter some, may be the same, already
+                    # registered
+                    clobber=True,
+                )
+
+
+process_entries()
