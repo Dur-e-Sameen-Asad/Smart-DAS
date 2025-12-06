@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDAS - Smart Document Assistive System</title>
+
+    <!-- Fonts and Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Flask Static Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Flask Static JS -->
+    <script src="{{ url_for('static', filename='js/upload.js') }}"></script>
+
+</head>
+<body>
+    {% include 'components/navbar.html' %}
+    <!-- Main Content -->
+    <main class="container main-content">
+        <!-- LEFT SIDE: Upload Section -->
+        <section class="left-section">
+            <h1 class="main-title">Smart Document Assistive System</h1>
+            <p class="subtitle">
+                Upload a document (Image, PDF, DOC/DOCX) and SmartDAS will automatically
+                <strong>extract the text</strong>, generate a <strong>summary</strong>,
+                and provide an <strong>audio version</strong> for accessibility.
+            </p>
+            <!-- File Upload Form -->
+            <form id="uploadForm" action="{{ url_for('process_document') }}" method="POST" enctype="multipart/form-data">
+                <div class="upload-card rounded-lg shadow-soft">
+                    <!-- Hidden File Input -->
+                    <input type="file" id="fileInput" name="document_file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" style="display: none;">
+
+                    <!-- Custom Upload Box -->
+                    <div id="fileUploadBox" class="upload-field-box rounded-lg">
+                        <span id="fileNameDisplay">Select Document (Image/PDF/Word)</span>
+                        <i class="fa-solid fa-file-arrow-up"></i>
+                    </div>
+                    <!-- Process Button -->
+                    <button type="submit" id="processButton" class="process-button rounded-lg">
+                        Process
+                    </button>
+                    <p class="processing-note">
+                        <span class="dot"></span>
+                        <span id="processNoteText">Select a document to begin processing</span>
+                    </p>
+                </div>
+            </form>
+        </section>
+        <!-- RIGHT SIDE: Image Preview 
+        <section class="right-section"> 
+            <div class="image-preview-box rounded-lg"> 
+                <i class="fa-solid fa-cloud-arrow-up cloud-icon-main"></i>
+                <img id="imagePreview" src="" alt="Image Preview"> 
+                <p id="previewType">File Preview</p>
+                <strong id="previewStatus">No file selected</strong> 
+            </div> 
+        </section> -->
+        <input type="file" id="fileInput" accept="image/*" style="display: none;">
+        <section class="right-section"> 
+            <div class="image-preview-box rounded-lg" id="previewBox"> 
+                <i class="fa-solid fa-file-lines default-icon" id="defaultIcon"></i> 
+                <p id="previewType">Image Preview</p> 
+                <strong id="previewStatus">No file selected</strong> 
+                <img id="imagePreview" src="" alt="Image Preview"> 
+            </div> 
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDAS - Processing Complete!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <header class="navbar shadow-soft">
+        <div class="container navbar-content">
+            <a href="{{ url_for('home') }}" class="logo">
+                SmartDAS <i class="fa-solid fa-eye"></i>
+            </a>
+
+            <ul class="nav-links">
+                <li class="active"><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('view_history') }}">History</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                <li><i class="fa-solid fa-volume-up audio-icon"></i></li>
+            </ul>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="results-header">
+            <h1 class="success-title">Processing Complete!</h1>
+        </div>
+
+        <div class="action-buttons-container">
+            <button class="action-button btn-play-audio">
+                <i class="fa-solid fa-volume-high"></i> Play Audio
+            </button>
+            <button class="action-button btn-save-history">
+                <i class="fa-solid fa-floppy-disk"></i> Save to History
+            </button>
+            <a href="{{ url_for('home') }}" class="action-button btn-upload-another">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Another Document
+            </a>
+        </div>
+        
+        <div class="results-grid">
+            
+            <div class="panel panel-extracted rounded-lg">
+                <h2 class="panel-header">Extracted Text</h2>
+                <div class="extracted-content">
+                    <p class="text-placeholder-header">Extracted Text</p>
+                    <p>The quick brown fox jumps over the lazy dog. This is a very large readable area designed visual imparements... The quick brown fox jumps designed specifically. All important information is presented for us. All visuals clearly.</p>
+                    <br>
+                    <p>The quick brown fox jumps over the lazy dog. This is a very large readable area designed visual imparements... The quick brown fox jumps designed specifically. All important information is presented for us. All visuals clearly.</p>
+                    <br>
+                    <p>The quick brown fox jumps over the lazy dog. This is a very large readable area designed visual imparements... The quick brown fox jumps designed specifically. All important information is presented for us. All visuals clearly.</p>
+                    <br>
+                    <p>The quick brown fox jumps over the lazy dog. This is a very large readable area designed visual imparements... The quick brown fox jumps designed specifically. All important information is presented for us. All visuals clearly.</p>
+                </div>
+            </div>
+
+            <div class="panel panel-summary rounded-lg">
+                <h2 class="panel-header">Summary</h2>
+                <p>The quick brown fox jumps dog. The ability to jump designed specifically for users with visual clearly. All important information is presented for us.</p>
+                <p>This paragraph contains a summary of the extracted text, designed to provide a quick overview of the document's content.</p>
+            </div>
+
+            <div class="panel panel-keywords rounded-lg">
+                <h2 class="panel-header">Keywords / Entities</h2>
+                <div class="keyword-tags">
+                    <span class="tag-pill">Fox</span>
+                    <span class="tag-pill">Dog</span>
+                    <span class="tag-pill">Accessibility</span>
+                    <span class="tag-pill">Document</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</body>
+</html> -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDAS - Processing Complete!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    {% include 'components/navbar.html' %}
+
+    <main class="container results-page">
+        <div class="results-header">
+            <h1 class="success-title">Processing Complete!</h1>
+        </div>
+
+        <!-- 🔊 Action Buttons Row -->
+        <div class="action-buttons-container">
+
+            {% if audio_file %}
+            <div class="audio-controls">
+                <audio id="summaryAudio" src="{{ url_for('serve_audio', filename=audio_file) }}"></audio>
+                <button id="toggleAudioBtn" class="action-button btn-play-audio">
+                    <i class="fa-solid fa-play"></i> Play
+                </button>
+            </div>
+            {% endif %}
+
+            <a href="{{ url_for('home') }}" class="action-button btn-upload-another">
+                Upload Document
+            </a>
+        </div>
+
+        <!-- 🧩 Results Grid -->
+        <div class="results-grid">
+            
+            <!-- Extracted Text / Image Description -->
+            <div class="panel panel-extracted rounded-lg">
+                <h2 class="panel-header">
+                    {% if original_text and original_text.startswith('Image Description:') %}
+                        Image Description
+                    {% else %}
+                        Extracted Text
+                    {% endif %}
+                </h2>
+                <div class="scrollable-text extracted-content">
+                    {% if original_text %}
+                        {% if original_text.startswith('Image Description:') %}
+                            <p><strong>Visual Content:</strong> {{ original_text|replace('Image Description: ', '')|replace('\n','<br>')|safe }}</p>
+                        {% else %}
+                            <p>{{ original_text|replace('\n','<br>')|safe }}</p>
+                        {% endif %}
+                    {% else %}
+                        <p style="color: #999; font-style: italic;">No text was extracted from the document.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="panel panel-summary rounded-lg">
+                 <h2 class="panel-header">Summary</h2>
+                 <div class="scrollable-text summary-content">
+                    {% if summary %}
+                        <p>{{ summary }}</p>
+                    {% else %}
+                        <p style="color: #999; font-style: italic;">No summary could be generated.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Keywords -->
+            <div class="panel panel-keywords rounded-lg">
+                <h2 class="panel-header">Keywords / Entities</h2>
+                <div class="keyword-tags">
+                    {% if keywords %}
+                    {% for keyword in keywords %}
+                    <span class="tag-pill">{{ keyword }}</span>
+                    {% endfor %}
+                    {% else %}
+                    <span class="tag-pill">Document</span>
+                    <span class="tag-pill">Summary</span>
+                    <span class="tag-pill">Text</span>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 🎵 Audio Play / Pause Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const audio = document.getElementById('summaryAudio');
+            const toggleBtn = document.getElementById('toggleAudioBtn');
+            if (!audio || !toggleBtn) return;
+
+            toggleBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause';
+                } else {
+                    audio.pause();
+                    toggleBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+                }
+            });
+
+            audio.addEventListener('ended', () => {
+                toggleBtn.innerHTML = '<i class="fa-solid fa-play"></i> Play';
+            });
+        });
+    </script>
+
+</body>
+</html>

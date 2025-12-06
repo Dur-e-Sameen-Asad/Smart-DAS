@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDAS - Document History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    {% include 'components/navbar.html' %}
+
+    <main class="container history-page-content">
+        <!-- Header -->
+        <div class="history-header">
+            <div class="history-title-group">
+                <h1 class="history-title">Document History</h1>
+                <p class="history-subtitle">View your previously processed documents, summaries, and audio results.</p>
+            </div>
+
+            <!-- Search + Sort -->
+            <div class="search-group">
+                <div class="search-bar">
+                    <input type="text" placeholder="Search documents" id="searchInput" onkeyup="filterHistory()">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- History List -->
+        <div class="document-history-list" id="historyList">
+            {% if documents %}
+                {% for doc in documents %}
+                    <div class="history-card rounded-lg">
+                        <div class="card-icon-circle">
+                            <i class="fa-solid fa-file-alt"></i>
+                        </div>
+
+                        <div class="card-content">
+                            <h3 class="card-title">{{ doc.filename }}</h3>
+                            <p class="card-date">Processed on {{ doc.timestamp }}</p>
+                            <p class="card-summary-preview">
+                                <strong>Summary:</strong>
+                                {{ doc.summary[:180] ~ ('...' if doc.summary|length > 180 else '') }}
+                            </p>
+                        </div>
+
+                        <div class="card-actions">
+                            {% if doc.audio_file %}
+                                <a href="{{ url_for('serve_audio', filename=doc.audio_file) }}" 
+                                   class="card-action-button btn-card-play-audio" target="_blank">
+                                    <i class="fa-solid fa-volume-high"></i> Audio
+                                </a>
+                            {% endif %}
+                            <a href="{{ url_for('show_results', id=doc.id) }}" 
+                               class="card-action-button btn-card-view-details">
+                                <i class="fa-solid fa-magnifying-glass"></i> View
+                            </a>
+                            <form action="{{ url_for('delete_history_entry', doc_id=doc.id) }}" method="POST" class="card-action-form" style="display: inline;" id="deleteForm{{ doc.id }}">
+                                <input type="hidden" name="page" value="{{ page }}">
+                                <input type="hidden" name="doc_id" value="{{ doc.id }}">
+                                <button type="submit" class="card-action-button btn-card-delete">
+                                    <i class="fa-solid fa-trash-alt"></i> Delete
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-history-message">No documents found in history yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination">
+  {% if page > 1 %}
+    <a href="{{ url_for('view_history', page=page-1) }}">
+      <button><i class="fa-solid fa-chevron-left"></i></button>
+    </a>
+  {% else %}
+    <button disabled><i class="fa-solid fa-chevron-left"></i></button>
+  {% endif %}
+
+  <span>Page {{ page }} of {{ total_pages }}</span>
+
+  {% if page < total_pages %}
+    <a href="{{ url_for('view_history', page=page+1) }}">
+      <button><i class="fa-solid fa-chevron-right"></i></button>
+    </a>
+  {% else %}
+    <button disabled><i class="fa-solid fa-chevron-right"></i></button>
+  {% endif %}
+</div>
+    </main>
+
+    <script>
+        // 🔍 Filter History by filename
+        function filterHistory() {
+            const input = document.getElementById("searchInput").value.toLowerCase();
+            const cards = document.querySelectorAll(".history-card");
+            cards.forEach(card => {
+                const title = card.querySelector(".card-title").textContent.toLowerCase();
+                card.style.display = title.includes(input) ? "" : "none";
+            });
+        }
+
+
+        // 🧹 Sort History (client-side)
+        function sortHistory() {
+            const select = document.getElementById("sortSelect").value;
+            const list = document.getElementById("historyList");
+            const cards = Array.from(list.getElementsByClassName("history-card"));
+
+            cards.sort((a, b) => {
+                const nameA = a.querySelector(".card-title").textContent.toLowerCase();
+                const nameB = b.querySelector(".card-title").textContent.toLowerCase();
+                const dateA = new Date(a.querySelector(".card-date").textContent.replace("Processed on ", ""));
+                const dateB = new Date(b.querySelector(".card-date").textContent.replace("Processed on ", ""));
+
+                switch (select) {
+                    case "name_asc": return nameA.localeCompare(nameB);
+                    case "name_desc": return nameB.localeCompare(nameA);
+                    case "date_asc": return dateA - dateB;
+                    case "date_desc": return dateB - dateA;
+                }
+            });
+
+            list.innerHTML = "";
+            cards.forEach(c => list.appendChild(c));
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartDAS - Contact Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    {% include 'components/navbar.html' %}
+
+    <main style="flex-grow: 1;">
+        <div class="container" style="padding-top: 40px;">
+            
+            <!-- Header Section -->
+            <section class="about-header">
+                <h1 class="about-title">Get in Touch</h1>
+                <p class="about-subtitle">We're here to help! Send us a message or connect with us directly.</p>
+                <div class="accent-divider"></div>
+            </section>
+
+            <!-- Contact Form and Info -->
+            <div class="contact-grid">
+                
+                <!-- Contact Form Card -->
+                <div class="contact-card rounded-lg shadow-soft">
+                    <h3 class="card-title-about">Send a Message</h3>
+                    <!-- Form action is placeholder as no backend submission logic exists yet -->
+                    <form action="#" method="POST" class="contact-form">
+                        <div class="form-group">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" required class="rounded-sm">
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required class="rounded-sm">
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Your Message</label>
+                            <textarea id="message" name="message" rows="5" required class="rounded-sm"></textarea>
+                        </div>
+                        <button type="submit" class="process-button rounded-sm">
+                            Submit
+                            <!-- Submit Inquiry <i class="fa-solid fa-paper-plane"></i> -->
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- Direct Contact Info Card -->
+                <div class="contact-info-card rounded-lg shadow-soft">
+                    <h3 class="card-title-about">Connect Directly</h3>
+                    <div class="info-item">
+                        <i class="fa-solid fa-envelope info-icon"></i>
+                        <p><strong>Email:</strong> <a href="mailto:support@smartdas.com">support@smartdas.com</a></p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-phone info-icon"></i>
+                        <p><strong>Phone:</strong> (555) 123-4567</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fa-solid fa-map-marker-alt info-icon"></i>
+                        <p><strong>Address:</strong> AI Innovation Hub, Tech City, 10010</p>
+                    </div>
+                    
+                    <h3 class="card-title-about" style="margin-top: 30px;">Follow Us</h3>
+                    <div class="social-links-contact">
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="GitHub"><i class="fab fa-github"></i></a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+    {% include 'components/footer.html' %}
+
+</body>
+</html>
