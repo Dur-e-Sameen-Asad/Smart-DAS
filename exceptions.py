@@ -1,18 +1,18 @@
-"""Exceptions used with python-docx.
-
-The base exception class is PythonDocxError.
+"""
+fsspec user-defined exception classes
 """
 
-
-class PythonDocxError(Exception):
-    """Generic error class."""
+import asyncio
 
 
-class InvalidSpanError(PythonDocxError):
-    """Raised when an invalid merge region is specified in a request to merge table
-    cells."""
+class BlocksizeMismatchError(ValueError):
+    """
+    Raised when a cached file is opened with a different blocksize than it was
+    written with
+    """
 
 
-class InvalidXmlError(PythonDocxError):
-    """Raised when invalid XML is encountered, such as on attempt to access a missing
-    required child element."""
+class FSTimeoutError(asyncio.TimeoutError):
+    """
+    Raised when a fsspec function timed out occurs
+    """
